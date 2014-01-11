@@ -27,4 +27,5 @@ dependencies {
     compile 'com.android.support:support-v4:19.0.0'
     compile 'com.google.code.gson:gson:2.2.4'
     compile 'com.squareup.picasso:picasso:2.1.1'
+    compile 'com.squareup.okhttp:okhttp:1.2.1'
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.deange.gimgur;
+package com.deange.gimgur.ui;
 
 import android.content.Context;
 import android.content.res.TypedArray;
