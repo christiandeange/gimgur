@@ -2,10 +2,15 @@ package com.deange.gimgur.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 public class QueryResponse {
 
-    @SerializedName("responseData")
-    private QueryResult mQueryResult;
+    public QueryResponse(final String responseDetails, final int responseCode, final List<ImageResult> imageResults) {
+        mResponseDetails = responseDetails;
+        mResponseCode = responseCode;
+        mImages = imageResults;
+    }
 
     @SerializedName("responseDetails")
     private String mResponseDetails;
@@ -13,6 +18,8 @@ public class QueryResponse {
     @SerializedName("responseStatus")
     private int mResponseCode;
 
+    @SerializedName("results")
+    private List<ImageResult> mImages;
 
     public int getResponseCode() {
         return mResponseCode;
@@ -22,7 +29,11 @@ public class QueryResponse {
         return mResponseDetails;
     }
 
-    public QueryResult getQueryResult() {
-        return mQueryResult;
+    public List<ImageResult> getImages() {
+        return mImages;
+    }
+
+    public void setImages(final List<ImageResult> images) {
+        mImages = images;
     }
 }

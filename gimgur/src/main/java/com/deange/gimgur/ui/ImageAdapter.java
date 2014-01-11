@@ -4,8 +4,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.GridView;
 import android.widget.ImageView;
 
 import com.deange.gimgur.R;
@@ -14,7 +12,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-public class ImageAdapter extends BaseAdapter {
+public class ImageAdapter extends PrefetchAdapter {
 
     private Context mContext;
     private List<ImageResult> mResults;
@@ -41,6 +39,8 @@ public class ImageAdapter extends BaseAdapter {
 
     @Override
     public View getView(final int position, final View convertView, final ViewGroup parent) {
+        // Need to call this for the prefetching capabilities
+        super.getView(position, convertView, parent);
 
         final LayoutInflater inflater = LayoutInflater.from(mContext);
         final ViewGroup rootView;

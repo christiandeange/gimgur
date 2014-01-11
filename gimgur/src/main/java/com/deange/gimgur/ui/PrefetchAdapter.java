@@ -5,9 +5,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
-/**
- * Created by christian on 1/11/2014.
- */
 public abstract class PrefetchAdapter extends BaseAdapter {
 
     private static final String TAG = PrefetchAdapter.class.getSimpleName();

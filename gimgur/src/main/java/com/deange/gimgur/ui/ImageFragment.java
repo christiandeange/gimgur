@@ -11,6 +11,7 @@ import android.widget.GridView;
 import android.widget.ListView;
 
 import com.deange.gimgur.R;
+import com.deange.gimgur.misc.GsonController;
 import com.deange.gimgur.model.QueryResponse;
 import com.deange.gimgur.net.Constants;
 import com.deange.gimgur.net.OKHttpRequest;
@@ -49,14 +50,11 @@ public class ImageFragment extends Fragment {
             @Override
             protected QueryResponse doInBackground(final Void... params) {
 
-
                 try {
-
                     final URL url = new URL(Constants.getUrl("bears"));
                     final String response = OKHttpRequest.get(url);
-                    final QueryResponse result = new Gson().fromJson(response, QueryResponse.class);
+                    return GsonController.getInstance().from(response, QueryResponse.class);
 
-                    return result;
                 } catch (final IOException e) {
                     e.printStackTrace();
                 }
@@ -70,12 +68,9 @@ public class ImageFragment extends Fragment {
                 Log.v(TAG, "queryResult = " + queryResult);
 
                 // Gotta make sure we are still attached
-                if (getActivity() != null) {
-                    if ((queryResult != null) && (queryResult.getQueryResult() != null)) {
-                        final ImageAdapter adapter = new ImageAdapter(getActivity(), queryResult.getQueryResult().getImages());
-
-                        mListview.setAdapter(adapter);
-                    }
+                if ((getActivity() != null) && (queryResult != null)) {
+                    final ImageAdapter adapter = new ImageAdapter(getActivity(), queryResult.getImages());
+                    mListview.setAdapter(adapter);
                 }
 
             }
