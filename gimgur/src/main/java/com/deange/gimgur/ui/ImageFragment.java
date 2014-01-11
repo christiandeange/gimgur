@@ -1,7 +1,8 @@
 package com.deange.gimgur.ui;
 
-import android.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,8 @@ import android.widget.ArrayAdapter;
 import com.deange.gimgur.R;
 
 public class ImageFragment extends Fragment {
+
+    private static final String TAG = ImageFragment.class.getSimpleName();
 
     private StaggeredGridView mGridView;
 
@@ -43,5 +46,13 @@ public class ImageFragment extends Fragment {
         mGridView.setAdapter(adapter);
 
         return rootView;
+    }
+
+    @Override
+    public void onActivityCreated(final Bundle savedInstanceState) {
+        Log.v(TAG, "onActivityCreated()");
+        super.onActivityCreated(savedInstanceState);
+
+
     }
 }

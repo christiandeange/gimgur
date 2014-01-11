@@ -2,12 +2,13 @@ package com.deange.gimgur.ui;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.deange.gimgur.R;
 
-public class MainActivity extends Activity {
+public class MainActivity extends FragmentActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -15,7 +16,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         if (savedInstanceState == null) {
-            getFragmentManager().beginTransaction()
+            getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, new ImageFragment())
                     .commit();
         }
