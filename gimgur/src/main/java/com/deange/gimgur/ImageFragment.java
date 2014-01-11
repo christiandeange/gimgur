@@ -12,6 +12,7 @@ public class ImageFragment extends Fragment {
     private StaggeredGridView mGridView;
 
     public ImageFragment() {
+        setRetainInstance(true);
     }
 
     @Override
