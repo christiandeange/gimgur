@@ -1,20 +1,29 @@
 package com.deange.gimgur.ui;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.GridView;
+import android.widget.ListView;
 
 import com.deange.gimgur.R;
+import com.deange.gimgur.model.QueryResponse;
+import com.deange.gimgur.net.Constants;
+import com.deange.gimgur.net.OKHttpRequest;
+import com.google.gson.Gson;
+
+import java.io.IOException;
+import java.net.URL;
 
 public class ImageFragment extends Fragment {
 
     private static final String TAG = ImageFragment.class.getSimpleName();
 
-    private StaggeredGridView mGridView;
+    private ListView mListview;
 
     public ImageFragment() {
         setRetainInstance(true);
@@ -25,25 +34,7 @@ public class ImageFragment extends Fragment {
 
         final View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        mGridView = (StaggeredGridView) rootView.findViewById(R.id.fragment_main_grid_view);
-        mGridView.setColumnCount(2);
-
-        final int max = 100;
-        final String[] items = new String[max];
-        for (int i = 0; i < max; i++) {
-            items[i] = "";
-            int times = (int) (Math.random() * 10);
-            for (int j = 0; j < times; j++) {
-                items[i] += "AAAAAAA";
-            }
-
-            items[i] += "AAAAAAA " + i;
-        }
-
-
-        final ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.test_list_item, items);
-
-        mGridView.setAdapter(adapter);
+        mListview = (ListView) rootView.findViewById(R.id.fragment_main_grid_view);
 
         return rootView;
     }
@@ -53,6 +44,41 @@ public class ImageFragment extends Fragment {
         Log.v(TAG, "onActivityCreated()");
         super.onActivityCreated(savedInstanceState);
 
+        new AsyncTask<Void, Void, QueryResponse>() {
 
+            @Override
+            protected QueryResponse doInBackground(final Void... params) {
+
+
+                try {
+
+                    final URL url = new URL(Constants.getUrl("bears"));
+                    final String response = OKHttpRequest.get(url);
+                    final QueryResponse result = new Gson().fromJson(response, QueryResponse.class);
+
+                    return result;
+                } catch (final IOException e) {
+                    e.printStackTrace();
+                }
+
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(final QueryResponse queryResult) {
+
+                Log.v(TAG, "queryResult = " + queryResult);
+
+                // Gotta make sure we are still attached
+                if (getActivity() != null) {
+                    if ((queryResult != null) && (queryResult.getQueryResult() != null)) {
+                        final ImageAdapter adapter = new ImageAdapter(getActivity(), queryResult.getQueryResult().getImages());
+
+                        mListview.setAdapter(adapter);
+                    }
+                }
+
+            }
+        }.execute();
     }
 }

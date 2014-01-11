@@ -1017,6 +1017,7 @@ public class StaggeredGridView extends ViewGroup {
                 }
             }
 
+            lp = (LayoutParams) child.getLayoutParams();
             final int span = Math.min(mColCount, lp.span);
             final int widthSize = colWidth * span + itemMargin * (span - 1);
             final int widthSpec = MeasureSpec.makeMeasureSpec(widthSize, MeasureSpec.EXACTLY);

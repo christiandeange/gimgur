@@ -3,7 +3,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <com.deange.gimgur.ui.StaggeredGridView
+    <ListView
             android:id="@+id/fragment_main_grid_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>

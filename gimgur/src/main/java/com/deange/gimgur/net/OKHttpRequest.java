@@ -10,7 +10,7 @@ import java.net.URL;
 
 public class OKHttpRequest {
 
-    public static String get(URL url) throws IOException {
+    public static String get(final URL url) throws IOException {
 
         final OkHttpClient client = new OkHttpClient();
         final HttpURLConnection connection = client.open(url);
