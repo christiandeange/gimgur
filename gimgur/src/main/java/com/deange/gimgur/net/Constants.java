@@ -8,7 +8,7 @@ public final class Constants {
 
         final String htmlQuery = TextUtils.htmlEncode(searchQuery);
 
-        return "http://ajax.googleapis.com/ajax/services/search/images?v=2.0&q=" + htmlQuery + "&rsz=8";
+        return "http://ajax.googleapis.com/ajax/services/search/images?v=2.0&q=" + htmlQuery + "&rsz=8&start=0";
     }
 
     private Constants() {

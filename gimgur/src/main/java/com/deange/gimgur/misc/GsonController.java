@@ -65,8 +65,9 @@ public class GsonController {
                 throws JsonParseException {
 
             final JsonObject root = jsonElement.getAsJsonObject();
-            final JsonObject data = root.get("responseData").getAsJsonObject();
-            final JsonArray results = data.get("results").getAsJsonArray();
+            final JsonObject data = root.getAsJsonObject("responseData");
+            final JsonObject cursor = data.getAsJsonObject("cursor");
+            final JsonArray results = data.getAsJsonArray("results");
 
             final Type listType = new TypeToken<List<ImageResult>>(){}.getType();
             final List<ImageResult> images = GsonController.getCachedFactory().fromJson(results, listType);
@@ -74,6 +75,7 @@ public class GsonController {
             // Create the deserialized response object
             final QueryResponse response = GsonController.getCachedFactory().fromJson(root, QueryResponse.class);
             response.setImages(images);
+            response.setNextUrl(cursor.get("moreResultsUrl").getAsString());
 
             return response;
         }

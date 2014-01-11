@@ -8,18 +8,24 @@ import android.widget.ImageView;
 
 import com.deange.gimgur.R;
 import com.deange.gimgur.model.ImageResult;
+import com.deange.gimgur.model.QueryResponse;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Set;
 
 public class ImageAdapter extends PrefetchAdapter {
 
     private Context mContext;
-    private List<ImageResult> mResults;
+    private List<ImageResult> mResults = new ArrayList<>();
+    private LinkedList<QueryResponse> mQueryResponses = new LinkedList<>();
 
-    public ImageAdapter(final Context context, final List<ImageResult> results) {
+    public ImageAdapter(final Context context) {
         mContext = context;
-        mResults = results;
     }
 
     @Override
@@ -29,12 +35,30 @@ public class ImageAdapter extends PrefetchAdapter {
 
     @Override
     public ImageResult getItem(final int position) {
-        return (mResults == null) ? null : mResults.get(position);
+        return mResults.get(position);
     }
 
     @Override
     public long getItemId(final int position) {
         return getItem(position).hashCode();
+    }
+
+    public void addResponse(final QueryResponse response) {
+        if (!mQueryResponses.contains(response)) {
+            // We always use 8 results per page
+            mQueryResponses.add(response);
+            response.setResultPage(mQueryResponses.size() * 8);
+            mResults.addAll(response.getImages());
+        }
+    }
+
+    public QueryResponse getLastResponse() {
+        try {
+            return mQueryResponses.getLast();
+        } catch (final NoSuchElementException e) {
+            // Weird API throw if there are no elements...why can't it just return null!?
+            return null;
+        }
     }
 
     @Override
@@ -58,6 +82,11 @@ public class ImageAdapter extends PrefetchAdapter {
         final float aspectRatio = (float) result.getHeight() / (float) result.getWidth();
         final int width = parent.getWidth();
         final int height = (int) (aspectRatio * width);
+
+        final ViewGroup.LayoutParams params = imageView.getLayoutParams();
+        params.width = width;
+        params.height = height;
+        imageView.setLayoutParams(params);
 
         Picasso.with(mContext)
                 .load(result.getUrl())

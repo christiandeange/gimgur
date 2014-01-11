@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.GridView;
 import android.widget.ListView;
 
 import com.deange.gimgur.R;
@@ -15,19 +14,28 @@ import com.deange.gimgur.misc.GsonController;
 import com.deange.gimgur.model.QueryResponse;
 import com.deange.gimgur.net.Constants;
 import com.deange.gimgur.net.OKHttpRequest;
-import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.net.URL;
 
-public class ImageFragment extends Fragment {
+public class ImageFragment extends Fragment implements PrefetchAdapter.OnPrefetchListener {
 
     private static final String TAG = ImageFragment.class.getSimpleName();
 
     private ListView mListview;
+    private ImageAdapter mAdapter;
 
     public ImageFragment() {
         setRetainInstance(true);
+    }
+
+    @Override
+    public void onCreate(final Bundle savedInstanceState) {
+        Log.v(TAG, "onCreate()");
+        super.onCreate(savedInstanceState);
+
+        mAdapter = new ImageAdapter(getActivity());
+        mAdapter.setOnPrefetchListener(this);
     }
 
     @Override
@@ -36,6 +44,7 @@ public class ImageFragment extends Fragment {
         final View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
         mListview = (ListView) rootView.findViewById(R.id.fragment_main_grid_view);
+        mListview.setAdapter(mAdapter);
 
         return rootView;
     }
@@ -45,13 +54,30 @@ public class ImageFragment extends Fragment {
         Log.v(TAG, "onActivityCreated()");
         super.onActivityCreated(savedInstanceState);
 
+        doQuery("bears");
+    }
+
+    @Override
+    public void onPrefetchRequested(final int position) {
+        doQuery("bears");
+    }
+
+    private void doQuery(final String query) {
         new AsyncTask<Void, Void, QueryResponse>() {
 
             @Override
             protected QueryResponse doInBackground(final Void... params) {
 
                 try {
-                    final URL url = new URL(Constants.getUrl("bears"));
+
+                    final URL url;
+                    if (mAdapter.getLastResponse() == null) {
+                        url = new URL(Constants.getUrl(query));
+
+                    } else {
+                        url = new URL(mAdapter.getLastResponse().getNextUrl());
+                    }
+
                     final String response = OKHttpRequest.get(url);
                     return GsonController.getInstance().from(response, QueryResponse.class);
 
@@ -67,10 +93,10 @@ public class ImageFragment extends Fragment {
 
                 Log.v(TAG, "queryResult = " + queryResult);
 
-                // Gotta make sure we are still attached
+                // Gotta make sure we are still attached to the activity!
                 if ((getActivity() != null) && (queryResult != null)) {
-                    final ImageAdapter adapter = new ImageAdapter(getActivity(), queryResult.getImages());
-                    mListview.setAdapter(adapter);
+                    mAdapter.addResponse(queryResult);
+                    mAdapter.notifyDataSetChanged();
                 }
 
             }

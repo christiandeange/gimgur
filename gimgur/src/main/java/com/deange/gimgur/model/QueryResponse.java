@@ -21,6 +21,9 @@ public class QueryResponse {
     @SerializedName("results")
     private List<ImageResult> mImages;
 
+    @SerializedName("moreResultsUrl")
+    private String mNextUrl;
+
     public int getResponseCode() {
         return mResponseCode;
     }
@@ -35,5 +38,20 @@ public class QueryResponse {
 
     public void setImages(final List<ImageResult> images) {
         mImages = images;
+    }
+
+    public String getNextUrl() {
+        return mNextUrl;
+    }
+
+    public void setNextUrl(final String nextUrl) {
+        mNextUrl = nextUrl
+                .replace("http://www.google.com/images", "http://ajax.googleapis.com/ajax/services/search/images") + "&v=2.0&&rsz=8";
+    }
+
+    public void setResultPage(final int page) {
+        if (mNextUrl != null) {
+            mNextUrl = mNextUrl.replaceFirst("start=\\d*", "start=" + page);
+        }
     }
 }
