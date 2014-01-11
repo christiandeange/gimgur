@@ -12,11 +12,9 @@ import com.deange.gimgur.model.QueryResponse;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Set;
 
 public class ImageAdapter extends PrefetchAdapter {
 

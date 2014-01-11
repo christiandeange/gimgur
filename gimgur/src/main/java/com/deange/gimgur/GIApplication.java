@@ -4,7 +4,6 @@ import android.app.Application;
 import android.util.Log;
 
 import com.deange.gimgur.misc.GsonController;
-import com.squareup.picasso.Picasso;
 
 public class GIApplication extends Application {
 
@@ -17,8 +16,6 @@ public class GIApplication extends Application {
 
         // Force initialize the gson singleton
         GsonController.getInstance();
-
-        new Picasso.Builder().memoryCache()
     }
 
 }
