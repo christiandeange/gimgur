@@ -8,7 +8,10 @@
 
     <string name="dialog_copied_clipboard">Copied to clipboard!</string>
     <string name="dialog_share">Share</string>
+    <string name="dialog_open">Open</string>
+
     <string name="intent_share_album">Share Album</string>
+
     <string name="fragment_tooltip">Start searching!</string>
 
 </resources>

@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -104,12 +105,10 @@ public class ImageFragment extends Fragment implements PrefetchAdapter.OnPrefetc
                                 startActivity(Intent.createChooser(i, title));
                             }
                         })
-                        .setNegativeButton(android.R.string.copy, new DialogInterface.OnClickListener() {
+                        .setNegativeButton(R.string.dialog_open, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(final DialogInterface dialog, final int which) {
-                                ((ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE))
-                                        .setPrimaryClip(ClipData.newPlainText("Copied Text", albumUrl));
-                                Toast.makeText(getActivity(), R.string.dialog_copied_clipboard, Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(albumUrl)));
                             }
                         })
                         .show();
