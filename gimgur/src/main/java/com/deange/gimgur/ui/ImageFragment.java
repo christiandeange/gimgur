@@ -5,6 +5,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,6 +14,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -38,6 +41,8 @@ public class ImageFragment extends Fragment implements PrefetchAdapter.OnPrefetc
     private ImageAdapter mAdapter;
     private TextView mItemsText;
     private ImageButton mUploadButton;
+    private ListView mListview;
+    private FrameLayout mBlockingView;
 
     private RefreshAffordanceProvider mRefreshAffordanceProvider = Fallback.INSTANCE;
 
@@ -45,12 +50,12 @@ public class ImageFragment extends Fragment implements PrefetchAdapter.OnPrefetc
         @Override
         public void onHttpResponseReceived(final QueryResponse queryResult) {
 
+            mRefreshAffordanceProvider.onRefreshAffordanceRequested(false);
+
             // Gotta make sure we are still attached to the activity!
             if ((getActivity() != null) && (queryResult != null)) {
                 mAdapter.addResponse(queryResult);
                 mAdapter.notifyDataSetChanged();
-
-                mRefreshAffordanceProvider.onRefreshAffordanceRequested(false);
             }
         }
     };
@@ -58,22 +63,52 @@ public class ImageFragment extends Fragment implements PrefetchAdapter.OnPrefetc
     private final HttpTask.HttpCallback<ImgurAlbum> POST_CALLBACK = new HttpTask.HttpCallback<ImgurAlbum>() {
         @Override
         public void onHttpResponseReceived(final ImgurAlbum album) {
+
+            mBlockingView.setVisibility(View.GONE);
+            mRefreshAffordanceProvider.onRefreshAffordanceRequested(false);
+
             if ((getActivity() != null) && (album != null)) {
 
-                final String albumLocation = UrlConstants.getImgurAlbum(album.getId());
+                final String title = getString(R.string.intent_share_album);
+                final String albumUrl = UrlConstants.getImgurAlbum(album.getId());
+
+                for (int i = 0; i < mAdapter.getCount(); i++) {
+                    final ImageResult result = mAdapter.getItem(i);
+                    result.setSelected(false);
+                }
+
+                // Hack for existing items already being displayed
+                for (int i = 0; i < mListview.getChildCount(); i++) {
+                    if (mListview.getChildAt(i) != null) {
+                        ((CompoundButton) mListview.getChildAt(i).findViewById(R.id.list_item_compound)).setChecked(false);
+                    }
+                }
+
+                updateText(0);
 
                 new AlertDialog.Builder(getActivity())
-                        .setMessage(albumLocation)
+                        .setTitle(title)
+                        .setMessage(albumUrl)
                         .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(final DialogInterface dialog, final int which) {
+                            }
+                        })
+                        .setNeutralButton(R.string.dialog_share, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(final DialogInterface dialog, final int which) {
+                                final Intent i = new Intent(Intent.ACTION_SEND)
+                                        .setType("text/plain")
+                                        .putExtra(Intent.EXTRA_SUBJECT, title)
+                                        .putExtra(Intent.EXTRA_TEXT, albumUrl);
+                                startActivity(Intent.createChooser(i, title));
                             }
                         })
                         .setNegativeButton(android.R.string.copy, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(final DialogInterface dialog, final int which) {
                                 ((ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE))
-                                        .setPrimaryClip(ClipData.newPlainText("Copied Text", albumLocation));
+                                        .setPrimaryClip(ClipData.newPlainText("Copied Text", albumUrl));
                                 Toast.makeText(getActivity(), R.string.dialog_copied_clipboard, Toast.LENGTH_SHORT).show();
                             }
                         })
@@ -99,8 +134,9 @@ public class ImageFragment extends Fragment implements PrefetchAdapter.OnPrefetc
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 
         final View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        final ListView listview = (ListView) rootView.findViewById(R.id.fragment_main_grid_view);
-        listview.setAdapter(mAdapter);
+        mBlockingView = (FrameLayout) rootView.findViewById(R.id.fragment_main_blocking);
+        mListview = (ListView) rootView.findViewById(R.id.fragment_main_grid_view);
+        mListview .setAdapter(mAdapter);
 
         final ViewGroup viewGroup = (ViewGroup) rootView.findViewById(R.id.fragment_main_upload_root);
         Utils.setLayoutTransition(viewGroup);
@@ -168,6 +204,7 @@ public class ImageFragment extends Fragment implements PrefetchAdapter.OnPrefetc
             }
         }
 
+        mBlockingView.setVisibility(View.VISIBLE);
         mRefreshAffordanceProvider.onRefreshAffordanceRequested(true);
         HttpTask.post(urls, POST_CALLBACK);
     }

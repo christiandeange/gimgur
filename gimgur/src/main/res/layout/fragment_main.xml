@@ -3,10 +3,22 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="16dp"
+            android:layout_marginRight="16dp"
+            android:gravity="right"
+            android:text="@string/fragment_tooltip"
+            android:textSize="20sp"
+            android:fontFamily="sans-serif-light"/>
+
     <ListView
             android:id="@+id/fragment_main_grid_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"/>
 
     <RelativeLayout
             android:id="@+id/fragment_main_upload_root"
@@ -41,5 +53,11 @@
 
     </RelativeLayout>
 
+    <FrameLayout
+            android:id="@+id/fragment_main_blocking"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:background="#DD000000"/>
 
 </RelativeLayout>
