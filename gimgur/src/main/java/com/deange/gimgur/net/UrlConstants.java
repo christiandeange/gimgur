@@ -19,6 +19,10 @@ public final class UrlConstants {
         return "https://aqueous-harbor-2434.herokuapp.com/";
     }
 
+    public static String getImgurAlbum(final String id) {
+        return "http://imgur.com/a/" + id;
+    }
+
     private UrlConstants() {
         // Uninstantiable
     }

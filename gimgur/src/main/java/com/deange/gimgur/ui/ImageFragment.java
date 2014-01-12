@@ -60,7 +60,7 @@ public class ImageFragment extends Fragment implements PrefetchAdapter.OnPrefetc
         public void onHttpResponseReceived(final ImgurAlbum album) {
             if ((getActivity() != null) && (album != null)) {
 
-                final String albumLocation = "http://imgur.com/a/" + album.getId();
+                final String albumLocation = UrlConstants.getImgurAlbum(album.getId());
 
                 new AlertDialog.Builder(getActivity())
                         .setMessage(albumLocation)
