@@ -39,6 +39,8 @@ public class ImageFragment extends Fragment implements PrefetchAdapter.OnPrefetc
     private TextView mItemsText;
     private ImageButton mUploadButton;
 
+    private RefreshAffordanceProvider mRefreshAffordanceProvider = Fallback.INSTANCE;
+
     private final HttpTask.HttpCallback<QueryResponse> GET_CALLBACK = new HttpTask.HttpCallback<QueryResponse>() {
         @Override
         public void onHttpResponseReceived(final QueryResponse queryResult) {
@@ -47,6 +49,8 @@ public class ImageFragment extends Fragment implements PrefetchAdapter.OnPrefetc
             if ((getActivity() != null) && (queryResult != null)) {
                 mAdapter.addResponse(queryResult);
                 mAdapter.notifyDataSetChanged();
+
+                mRefreshAffordanceProvider.onRefreshAffordanceRequested(false);
             }
         }
     };
@@ -114,8 +118,6 @@ public class ImageFragment extends Fragment implements PrefetchAdapter.OnPrefetc
     public void onActivityCreated(final Bundle savedInstanceState) {
         Log.v(TAG, "onActivityCreated()");
         super.onActivityCreated(savedInstanceState);
-
-        doQuery("bears");
     }
 
     public void doQuery(final String queryString) {
@@ -123,6 +125,11 @@ public class ImageFragment extends Fragment implements PrefetchAdapter.OnPrefetc
 
         if (!TextUtils.isEmpty(queryString)) {
             try {
+
+                if (!TextUtils.equals(queryString, mAdapter.getCurrentQuery())) {
+                    mAdapter.clear();
+                }
+
                 if (mAdapter.getLastResponse() == null) {
                     url = new URL(UrlConstants.getQueryUrl(queryString));
 
@@ -130,8 +137,11 @@ public class ImageFragment extends Fragment implements PrefetchAdapter.OnPrefetc
                     url = new URL(mAdapter.getLastResponse().getNextUrl());
                 }
 
+                mAdapter.setCurrentQuery(queryString);
+                mRefreshAffordanceProvider.onRefreshAffordanceRequested(true);
                 HttpTask.get(url, QueryResponse.class, GET_CALLBACK);
-            } catch (MalformedURLException e) {
+
+            } catch (final MalformedURLException e) {
                 e.printStackTrace();
             }
         }
@@ -158,12 +168,20 @@ public class ImageFragment extends Fragment implements PrefetchAdapter.OnPrefetc
             }
         }
 
+        mRefreshAffordanceProvider.onRefreshAffordanceRequested(true);
         HttpTask.post(urls, POST_CALLBACK);
+    }
+
+    public void setRefreshAffordanceProvider(final RefreshAffordanceProvider refreshAffordanceProvider) {
+        Log.v(TAG, "setRefreshAffordanceProvider()");
+
+        mRefreshAffordanceProvider = refreshAffordanceProvider == null
+                ? Fallback.INSTANCE : refreshAffordanceProvider;
     }
 
     @Override
     public void onPrefetchRequested(final int position) {
-        doQuery("bears");
+        doQuery(mAdapter.getCurrentQuery());
     }
 
     @Override
@@ -188,6 +206,19 @@ public class ImageFragment extends Fragment implements PrefetchAdapter.OnPrefetc
             case R.id.fragment_main_upload:
                 handleUpload();
                 break;
+        }
+    }
+
+    public interface RefreshAffordanceProvider {
+        public void onRefreshAffordanceRequested(final boolean show);
+    }
+
+    private static final class Fallback implements RefreshAffordanceProvider {
+        public static final Fallback INSTANCE = new Fallback();
+
+        @Override
+        public void onRefreshAffordanceRequested(final boolean show) {
+            Log.w(TAG, "Fallback: onRefreshAffordanceRequested()");
         }
     }
 }

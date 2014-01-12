@@ -6,11 +6,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.deange.gimgur.R;
 import com.deange.gimgur.model.ImageResult;
 import com.deange.gimgur.model.QueryResponse;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -24,6 +26,8 @@ public class ImageAdapter extends PrefetchAdapter {
     private OnItemChangeListener mListener;
     private List<ImageResult> mResults = new ArrayList<>();
     private LinkedList<QueryResponse> mQueryResponses = new LinkedList<>();
+
+    private String mCurrentQuery;
 
     public ImageAdapter(final Context context, final OnItemChangeListener listener) {
         mContext = context;
@@ -43,6 +47,14 @@ public class ImageAdapter extends PrefetchAdapter {
     @Override
     public long getItemId(final int position) {
         return getItem(position).hashCode();
+    }
+
+    public String getCurrentQuery() {
+        return mCurrentQuery;
+    }
+
+    public void setCurrentQuery(final String currentQuery) {
+        mCurrentQuery = currentQuery;
     }
 
     public void addResponse(final QueryResponse response) {
@@ -67,6 +79,11 @@ public class ImageAdapter extends PrefetchAdapter {
         mListener = listener;
     }
 
+    public void clear() {
+        mResults.clear();
+        mQueryResponses.clear();
+    }
+
     @Override
     public View getView(final int position, final View convertView, final ViewGroup parent) {
         // Need to call this for the prefetching capabilities
@@ -86,6 +103,7 @@ public class ImageAdapter extends PrefetchAdapter {
 
         final TextView description = (TextView) rootView.findViewById(R.id.list_item_description);
         final ImageView imageView = (ImageView) rootView.findViewById(R.id.list_item_imageview);
+        final ProgressBar progress = (ProgressBar) rootView.findViewById(R.id.list_item_progress);
         final CompoundButton compoundButton = (CompoundButton) rootView.findViewById(R.id.list_item_compound);
 
         final float aspectRatio = (float) result.getHeight() / (float) result.getWidth();
@@ -113,14 +131,31 @@ public class ImageAdapter extends PrefetchAdapter {
                 }
             }
         });
-        compoundButton.setChecked(result.isSelected());
 
+        compoundButton.setChecked(result.isSelected());
         description.setText(result.getDescription());
+
+        final Callback callback = new Callback() {
+            @Override
+            public void onSuccess() {
+                done();
+            }
+
+            @Override
+            public void onError() {
+                done();
+            }
+
+            private void done() {
+                progress.setVisibility(View.GONE);
+                description.setVisibility(View.GONE);
+            }
+        };
 
         Picasso.with(mContext)
                 .load(result.getUrl())
                 .centerInside().resize(width, height)
-                .into(imageView);
+                .into(imageView, callback);
 
         return rootView;
     }

@@ -9,7 +9,7 @@ import android.widget.SearchView;
 
 import com.deange.gimgur.R;
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends FragmentActivity implements ImageFragment.RefreshAffordanceProvider, SearchView.OnQueryTextListener {
 
     private MenuItem mRefreshMenu;
 
@@ -28,6 +28,8 @@ public class MainActivity extends FragmentActivity {
             }
         }
 
+        mFragment.setRefreshAffordanceProvider(this);
+
         if (!mFragment.isAdded()) {
             getSupportFragmentManager().beginTransaction().add(
                     R.id.container, mFragment, ImageFragment.TAG).commit();
@@ -37,9 +39,9 @@ public class MainActivity extends FragmentActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 
-    private void setRefreshProgressState(final boolean show) {
+    private void setRefreshState(final boolean visible) {
         if (mRefreshMenu != null) {
-            if (show) {
+            if (visible) {
                 mRefreshMenu.setActionView(R.layout.menu_progress_layout);
                 mRefreshMenu.setVisible(true);
 
@@ -55,35 +57,31 @@ public class MainActivity extends FragmentActivity {
         getMenuInflater().inflate(R.menu.main, menu);
 
         mRefreshMenu = menu.findItem(R.id.action_progress);
-        setRefreshProgressState(false);
+        setRefreshState(false);
 
         final SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
-
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(final String query) {
-                if (mFragment != null) {
-                    mFragment.doQuery(query);
-                }
-                return (mFragment != null);
-            }
-
-            @Override
-            public boolean onQueryTextChange(final String newText) {
-                return false;
-            }
-        });
+        searchView.setOnQueryTextListener(this);
 
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_search) {
-            return true;
+    public boolean onQueryTextSubmit(final String query) {
+        if (mFragment != null) {
+            // Start a user-initiated query!
+            mFragment.doQuery(query);
         }
-        return super.onOptionsItemSelected(item);
+        return (mFragment != null);
     }
 
+    @Override
+    public boolean onQueryTextChange(final String newText) {
+        // Nothing to do here
+        return false;
+    }
+
+    @Override
+    public void onRefreshAffordanceRequested(final boolean show) {
+        setRefreshState(show);
+    }
 }

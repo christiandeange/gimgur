@@ -1,12 +1,18 @@
 package com.deange.gimgur.net;
 
-import android.text.TextUtils;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 public final class UrlConstants {
 
     public static String getQueryUrl(final String searchQuery) {
-        final String htmlQuery = TextUtils.htmlEncode(searchQuery);
-        return "http://ajax.googleapis.com/ajax/services/search/images?v=2.0&q=" + htmlQuery + "&rsz=8&start=0";
+        final String htmlQuery;
+        try {
+            htmlQuery = URLEncoder.encode(searchQuery, "UTF-8");
+            return "http://ajax.googleapis.com/ajax/services/search/images?v=2.0&q=" + htmlQuery + "&rsz=8&start=0";
+        } catch (UnsupportedEncodingException e) {
+            return null;
+        }
     }
 
     public static String getPostUrl() {
