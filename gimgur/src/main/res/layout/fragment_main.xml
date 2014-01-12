@@ -8,4 +8,38 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
+    <RelativeLayout
+            android:id="@+id/fragment_main_upload_root"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/upload_unselected">
+
+        <ImageButton
+                android:id="@+id/fragment_main_upload"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/fragment_main_items"
+                android:src="@drawable/ic_image_upload"
+                android:background="@drawable/upload_background"/>
+
+        <TextView
+                android:id="@+id/fragment_main_items"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@id/fragment_main_upload"
+                android:layout_alignBottom="@id/fragment_main_upload"
+                android:layout_alignParentLeft="true"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:gravity="center"
+                android:textSize="20sp"
+                android:fontFamily="sans-serif-light"/>
+
+    </RelativeLayout>
+
+
 </RelativeLayout>

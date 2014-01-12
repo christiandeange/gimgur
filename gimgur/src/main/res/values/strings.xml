@@ -6,4 +6,6 @@
     <string name="compound_selected">SELECTED</string>
     <string name="compound_unselected">UNSELECTED</string>
 
+    <string name="dialog_copied_clipboard">Copied to clipboard!</string>
+
 </resources>

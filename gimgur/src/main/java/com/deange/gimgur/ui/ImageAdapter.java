@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.deange.gimgur.R;
 import com.deange.gimgur.model.ImageResult;
@@ -20,11 +21,13 @@ import java.util.NoSuchElementException;
 public class ImageAdapter extends PrefetchAdapter {
 
     private Context mContext;
+    private OnItemChangeListener mListener;
     private List<ImageResult> mResults = new ArrayList<>();
     private LinkedList<QueryResponse> mQueryResponses = new LinkedList<>();
 
-    public ImageAdapter(final Context context) {
+    public ImageAdapter(final Context context, final OnItemChangeListener listener) {
         mContext = context;
+        mListener = listener;
     }
 
     @Override
@@ -60,6 +63,10 @@ public class ImageAdapter extends PrefetchAdapter {
         }
     }
 
+    public void setListener(final OnItemChangeListener listener) {
+        mListener = listener;
+    }
+
     @Override
     public View getView(final int position, final View convertView, final ViewGroup parent) {
         // Need to call this for the prefetching capabilities
@@ -75,9 +82,11 @@ public class ImageAdapter extends PrefetchAdapter {
             rootView = (ViewGroup) convertView;
         }
 
+        final ImageResult result = getItem(position);
+
+        final TextView description = (TextView) rootView.findViewById(R.id.list_item_description);
         final ImageView imageView = (ImageView) rootView.findViewById(R.id.list_item_imageview);
         final CompoundButton compoundButton = (CompoundButton) rootView.findViewById(R.id.list_item_compound);
-        final ImageResult result = getItem(position);
 
         final float aspectRatio = (float) result.getHeight() / (float) result.getWidth();
         final int width = parent.getWidth();
@@ -88,13 +97,25 @@ public class ImageAdapter extends PrefetchAdapter {
         params.height = height;
         imageView.setLayoutParams(params);
 
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                compoundButton.performClick();
+            }
+        });
+
         compoundButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(final CompoundButton buttonView, final boolean isChecked) {
                 result.setSelected(isChecked);
+                if (mListener != null) {
+                    mListener.onItemStateChanged(position);
+                }
             }
         });
         compoundButton.setChecked(result.isSelected());
+
+        description.setText(result.getDescription());
 
         Picasso.with(mContext)
                 .load(result.getUrl())
@@ -102,6 +123,10 @@ public class ImageAdapter extends PrefetchAdapter {
                 .into(imageView);
 
         return rootView;
+    }
+
+    public interface OnItemChangeListener {
+        public void onItemStateChanged(final int position);
     }
 
 }

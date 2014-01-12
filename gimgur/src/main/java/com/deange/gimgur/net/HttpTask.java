@@ -45,7 +45,7 @@ public final class HttpTask {
         }.execute();
     }
 
-    public static void post(final List<ImageResult> images, final HttpCallback<ImgurAlbum> callback) {
+    public static void post(final List<String> urls, final HttpCallback<ImgurAlbum> callback) {
         new AsyncTask<Void, Void, ImgurAlbum>() {
 
             @Override
@@ -54,12 +54,6 @@ public final class HttpTask {
                 try {
 
                     final URL url = new URL(UrlConstants.getPostUrl());
-
-                    final List<String> urls = new ArrayList<>();
-                    for (final ImageResult result : images) {
-                        urls.add(result.getUrl());
-                    }
-
                     final ImgurAlbum album = new ImgurAlbum();
                     album.setImages(urls);
 

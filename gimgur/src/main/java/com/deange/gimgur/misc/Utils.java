@@ -1,5 +1,10 @@
 package com.deange.gimgur.misc;
 
+import android.animation.LayoutTransition;
+import android.os.Build;
+import android.view.View;
+import android.view.ViewGroup;
+
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
@@ -22,6 +27,16 @@ public final class Utils {
                 closeable.close();
             } catch (final IOException e) {
                 // Shhhhh... be still.
+            }
+        }
+    }
+
+    public static void setLayoutTransition(final ViewGroup view) {
+        if (view != null) {
+            final LayoutTransition transition = new LayoutTransition();
+            view.setLayoutTransition(transition);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                transition.enableTransitionType(LayoutTransition.CHANGING);
             }
         }
     }
