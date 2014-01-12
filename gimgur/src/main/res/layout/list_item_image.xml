@@ -1,10 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
-    <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
-               android:id="@+id/list_item_imageview"
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"/>
+    <ImageView
+            android:id="@+id/list_item_imageview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+    <ToggleButton
+            android:id="@+id/list_item_compound"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="16dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:background="@drawable/compound_background"
+            android:checked="false"
+            android:textOn="@string/compound_selected"
+            android:textOff="@string/compound_unselected"
+            android:textSize="20sp"
+            android:textStyle="italic"
+            android:textColor="@android:color/white"
+            android:fontFamily="sans-serif-light"/>
 </RelativeLayout>

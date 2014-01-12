@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 
 import com.deange.gimgur.R;
@@ -75,6 +76,7 @@ public class ImageAdapter extends PrefetchAdapter {
         }
 
         final ImageView imageView = (ImageView) rootView.findViewById(R.id.list_item_imageview);
+        final CompoundButton compoundButton = (CompoundButton) rootView.findViewById(R.id.list_item_compound);
         final ImageResult result = getItem(position);
 
         final float aspectRatio = (float) result.getHeight() / (float) result.getWidth();
@@ -86,6 +88,14 @@ public class ImageAdapter extends PrefetchAdapter {
         params.height = height;
         imageView.setLayoutParams(params);
 
+        compoundButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(final CompoundButton buttonView, final boolean isChecked) {
+                result.setSelected(isChecked);
+            }
+        });
+        compoundButton.setChecked(result.isSelected());
+
         Picasso.with(mContext)
                 .load(result.getUrl())
                 .centerInside().resize(width, height)
@@ -93,4 +103,5 @@ public class ImageAdapter extends PrefetchAdapter {
 
         return rootView;
     }
+
 }

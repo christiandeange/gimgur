@@ -16,6 +16,9 @@ public class ImageResult {
     @SerializedName("height")
     private int mHeight;
 
+    // Used in UI for toggling upload to album or not
+    private boolean mIsSelected;
+
     public String getUrl() {
         return mUrl;
     }
@@ -30,5 +33,13 @@ public class ImageResult {
 
     public int getHeight() {
         return mHeight;
+    }
+
+    public boolean isSelected() {
+        return mIsSelected;
+    }
+
+    public void setSelected(final boolean isSelected) {
+        mIsSelected = isSelected;
     }
 }
